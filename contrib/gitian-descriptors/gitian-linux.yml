@@ -1,5 +1,5 @@
 ---
-name: "axel-linux-2.0"
+name: "axel-linux-1.0.0"
 enable_cache: true
 suites:
 - "trusty"

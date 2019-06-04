@@ -74,7 +74,7 @@ public:
         bool confirmed = index.data(TransactionTableModel::ConfirmedRole).toBool();
         QVariant value = index.data(Qt::ForegroundRole);
         QColor foreground = COLOR_BLACK;
-        (theme.operator==("dark")) ? foreground = QColor(209, 180, 117) : foreground = COLOR_BLACK;
+        (theme.operator==("dark")) ? foreground = QColor(255, 255, 255) : foreground = COLOR_BLACK;
         if (value.canConvert<QBrush>()) {
             QBrush brush = qvariant_cast<QBrush>(value);
             foreground = brush.color();
@@ -85,11 +85,11 @@ public:
         painter->drawText(addressRect, Qt::AlignLeft | Qt::AlignVCenter, address, &boundingRect);
 
         if (amount < 0) {
-            (theme.operator==("dark")) ? foreground = QColor(220, 50, 50) : foreground = COLOR_NEGATIVE;
+            (theme.operator==("dark")) ? foreground = QColor(255, 255, 255) : foreground = COLOR_NEGATIVE;
         } else if (!confirmed) {
-            (theme.operator==("dark")) ? foreground = QColor(98, 56, 32) : foreground = COLOR_UNCONFIRMED;
+            (theme.operator==("dark")) ? foreground = QColor(255, 255, 255) : foreground = COLOR_UNCONFIRMED;
         } else {
-            (theme.operator==("dark")) ? foreground = QColor(209, 180, 117) : foreground = COLOR_BLACK;
+            (theme.operator==("dark")) ? foreground = QColor(255, 255, 255) : foreground = COLOR_BLACK;
         }
         painter->setPen(foreground);
         QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true, BitcoinUnits::separatorAlways);
@@ -98,7 +98,7 @@ public:
         }
         painter->drawText(amountRect, Qt::AlignRight | Qt::AlignVCenter, amountText);
 
-        (theme.operator==("dark")) ? painter->setPen( QColor(209, 180, 117) ) : painter->setPen(COLOR_BLACK);
+        (theme.operator==("dark")) ? painter->setPen( QColor(255, 255, 255) ) : painter->setPen(COLOR_BLACK);
         painter->drawText(amountRect, Qt::AlignLeft | Qt::AlignVCenter, GUIUtil::dateTimeStr(date));
 
         painter->restore();

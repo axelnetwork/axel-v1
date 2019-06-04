@@ -59,6 +59,32 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 
     const CTransaction& txNew = (nBlockHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
 
+    #if 0//It may cause the blockchain fork.
+    CAmount nFees = 0;
+    CAmount nActualReward = 0;
+    CAmount nReward = GetBlockValue(nBlockHeight - 1);
+    bool fRet = false;
+    CAmount nAmount = 0;
+
+    for (size_t i = (nBlockHeight > Params().LAST_POW_BLOCK() ? 2 : 1); i < block.vtx.size(); i++) {
+        const CTransaction& tx = block.vtx[i];
+        fRet = GetTxValueIn(tx, nAmount);
+        if(!fRet) break;
+        CAmount nTxFees = nAmount - tx.GetValueOut();
+        nFees += nTxFees;
+    }
+
+    if(fRet) fRet = GetTxValueIn(txNew, nAmount);
+    if(fRet) {
+        nActualReward = (nBlockHeight > Params().LAST_POW_BLOCK())? \
+                    (txNew.GetValueOut() - nAmount) : txNew.GetValueOut();
+        if (nActualReward > (nReward + nFees)) {
+            LogPrintf("The real block reward is not correct, txFees=%d, blockReward=%d, actualReward=%d\n", nFees, nReward, nActualReward);
+            return false;
+        }
+    }
+    #endif
+
     //check for masternode payee
     if (masternodePayments.IsTransactionValid(txNew, nBlockHeight))
         return true;

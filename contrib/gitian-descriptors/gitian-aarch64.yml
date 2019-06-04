@@ -1,5 +1,5 @@
 ---
-name: "axel-aarch64-2.0"
+name: "axel-aarch64-1.0.0"
 enable_cache: true
 suites:
 - "xenial"

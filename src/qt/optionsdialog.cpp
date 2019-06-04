@@ -92,8 +92,8 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet) : QDialog(paren
     }
 
     /* Theme selector static themes */
-    ui->theme->addItem(QString("Light Blue (Default)"), QVariant("default"));
-    ui->theme->addItem(QString("Dark Chocolate"), QVariant("dark"));
+    ui->theme->addItem(QString("Light (Default)"), QVariant("default"));
+    ui->theme->addItem(QString("Dark"), QVariant("dark"));
 
     /* Toolbar selector */
     ui->toolbarPosition->addItem(QString("Top of window"), QVariant("Top"));

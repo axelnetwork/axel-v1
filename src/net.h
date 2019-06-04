@@ -272,7 +272,7 @@ public:
 protected:
     // Denial-of-service detection/prevention
     // Key is IP address, value is banned-until-time
-    static std::map<CNetAddr, int64_t> setBanned;
+    static std::map<CService, int64_t> setBanned;
     static CCriticalSection cs_setBanned;
 
     std::vector<std::string> vecRequestsFulfilled; //keep track of what client has asked for
@@ -634,8 +634,8 @@ public:
     // between nodes running old code and nodes running
     // new code.
     static void ClearBanned(); // needed for unit testing
-    static bool IsBanned(CNetAddr ip);
-    static bool Ban(const CNetAddr& ip);
+    static bool IsBanned(CService ip);
+    static bool Ban(const CService& ip);
     void copyStats(CNodeStats& stats);
 
     static bool IsWhitelistedRange(const CNetAddr& ip);

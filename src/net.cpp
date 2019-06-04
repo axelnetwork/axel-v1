@@ -488,7 +488,7 @@ void CNode::PushVersion()
 }
 
 
-std::map<CNetAddr, int64_t> CNode::setBanned;
+std::map<CService, int64_t> CNode::setBanned;
 CCriticalSection CNode::cs_setBanned;
 
 void CNode::ClearBanned()
@@ -496,12 +496,12 @@ void CNode::ClearBanned()
     setBanned.clear();
 }
 
-bool CNode::IsBanned(CNetAddr ip)
+bool CNode::IsBanned(CService ip)
 {
     bool fResult = false;
     {
         LOCK(cs_setBanned);
-        std::map<CNetAddr, int64_t>::iterator i = setBanned.find(ip);
+        std::map<CService, int64_t>::iterator i = setBanned.find(ip);
         if (i != setBanned.end()) {
             int64_t t = (*i).second;
             if (GetTime() < t)
@@ -511,7 +511,7 @@ bool CNode::IsBanned(CNetAddr ip)
     return fResult;
 }
 
-bool CNode::Ban(const CNetAddr& addr)
+bool CNode::Ban(const CService& addr)
 {
     int64_t banTime = GetTime() + GetArg("-bantime", 60 * 60 * 24); // Default 24-hour ban
     {

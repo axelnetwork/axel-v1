@@ -57,6 +57,9 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         // (0, uint256("0x01"))
         (5205, uint256("9f486738935a78d8e4a4f29316d4d04ff274b952893e752159a7f3e329d8570f"))
         (15000, uint256("7eac856a1f45097b6dbcf9c9ee9af0c807190dfe6031354dcc90d9cb95a472a0"))
+        (23023, uint256("a34a206d0e7b2a814c5dac6e44f47358fe9227e5ef0123007dd67a10cb4af584"))
+        (30000, uint256("926137a6fa0b90f8c559e72ab123adb622ec7018403caadb329d2d75d75b611a"))
+        (38900, uint256("d7f909894fb79880a7a433ab19265e3274ba67d2d53219e1e7842aaaf70bfb6f"))
     ;
 
 static const Checkpoints::CCheckpointData data = {
@@ -64,8 +67,8 @@ static const Checkpoints::CCheckpointData data = {
     // 1549526523,
     // 1,
     // 1
-    1557511980000,
-    29736,
+    1559063960,
+    78256,
     2000
     // 1549526525, // * UNIX timestamp of last checkpoint block
     // 0,          // * total number of transactions between genesis and last checkpoint
@@ -157,6 +160,11 @@ public:
         vSeeds.push_back(CDNSSeedData("", "45.32.241.121"));     // AXEL2-MASTERNODE-013 - Sydney
         vSeeds.push_back(CDNSSeedData("", "207.246.103.19"));    // AXEL2-MASTERNODE-014 - Los Angles
 
+        vSeeds.push_back(CDNSSeedData("", "108.61.241.113"));    // AXEL1-MN-005 (former AXEL2-MASTERNODE-015)
+        vSeeds.push_back(CDNSSeedData("", "144.202.72.110"));    // AXEL2-MN-005 (former AXEL2-MASTERNODE-016)
+        vSeeds.push_back(CDNSSeedData("", "95.179.238.23"));     // AXEL3-MN-005 (former AXEL2-MASTERNODE-017)
+        vSeeds.push_back(CDNSSeedData("", "139.180.223.77"));    // AXEL3-MN-006 (former AXEL2-MASTERNODE-018)
+
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 23); // A
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 75); // X
         base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 83);     // a
@@ -181,9 +189,9 @@ public:
         nPoolMaxTransactions = 3;
 
         vAlertPubKey = ParseHex("04732afb18c3c41a739fb00b381291d8da4e4d74606c88eb85496899ed7638911792f0a7fd0bdfa51e7587f2c006a4a16aaf475d11e0b8106dfd3f23f9e9bedf62");
-        vGMPubKey = ParseHex("049e20bd6cc0da7270bfa60daf381593377418ce9270b7dd38a93026acae98966e89da65067b41e388e194a7e4e2276336b3ddba5e3d5bbc81a78a04f982dfb4fc");
-        strSporkKey = "0416726a44c09752eddf582f08ad668bd49d563322a6ad746347eb6874bbfce2a6ce12c0f991fed88289d977395e1814a0cc1778f24ee2eeaa68d58183f3bd6195";
-        strObfuscationPoolDummyAddress = "eHP7weAZMjVcqU2Rb8QJDJTmMmYnWQNce1";
+        vGMPubKey = ParseHex("04fed4284f0e493cb41b389b9d262066c05edd5f524b64ea2ee6d7b8aa0658f67ff98df15895e0cae5702ab31712da0453f50e931dc1c1bc5d1eba88d09d20b5b3");
+        strSporkKey = "048563419991ec5e3566a0b6fd067bd65912a491363986c4ea447662c6fe449698aca198fe0c3fbbec6da98971e77e96ac9463a85dbe4f2a30275cdeba0ac99855";
+        strObfuscationPoolDummyAddress = "AMtbTau7tfT9juwVXu7Xegevqg4zu9y4M6";
     }
 
     const Checkpoints::CCheckpointData& Checkpoints() const
@@ -254,8 +262,8 @@ public:
 
         vAlertPubKey = ParseHex("04fed4284f0e493cb41b389b9d262066c05edd5f524b64ea2ee6d7b8aa0658f67ff98df15895e0cae5702ab31712da0453f50e931dc1c1bc5d1eba88d09d20b5b3");
         vGMPubKey = ParseHex("0414b78fd29848ca55bacabe49c6bf53c8cb5224cdd84590f21616457c564b01d2c26c69fea8a55b5e336cb40981ba3167b04ddd149a21f59ab07cf30a4b7285b1");
-        strSporkKey = "043f305881c14698ca11d9ccbbef49714a816da377bcc0b25d2d54e5a5b266605353e5ec4c7f9958899b5e7a550225d652151ada50d040277ef75ada1214f92e77";
-        strObfuscationPoolDummyAddress = "xJR9MjNhPLKLLCowMWNznC9gkEQHQPjcJr";
+        strSporkKey = "04d549d4d839d8c404e18f3b4c5722c471bde4df76c77a48d52ddfa07fe6d07a753d5ddba68fc6addcfda2779b3ded5d18be69fefba8c58610f1d7eb2a2ad6a3a2";
+        strObfuscationPoolDummyAddress = "AMtbTau7tfT9juwVXu7Xegevqg4zu9y4M6";
 
     }
     const Checkpoints::CCheckpointData& Checkpoints() const

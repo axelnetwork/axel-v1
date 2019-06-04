@@ -34,7 +34,4 @@ Join to our group at [Discord](https://discordapp.com/channels/40769957338179175
 </table>
 
 ***
-[AXEL Coin private GitLab](https://gitlab.stoamigo.com/agdn/axel-coin)
-
-***
 Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.

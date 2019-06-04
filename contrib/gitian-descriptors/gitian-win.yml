@@ -1,5 +1,5 @@
 ---
-name: "axel-win-2.0"
+name: "axel-win-1.0.0"
 enable_cache: true
 suites:
 - "trusty"

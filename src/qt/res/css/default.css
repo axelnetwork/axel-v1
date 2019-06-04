@@ -71,10 +71,9 @@
 
     /* Base Text Size & Color */
     QLabel {
-            font-size:12px;
-            color:rgb(0, 0, 0);
-
-                 }
+        font-size:12px;
+        color:rgb(0, 0, 0);
+        }
 
 
 
@@ -137,6 +136,7 @@
     QTabBar::tab {
         border: 1px solid;
         border-color: #d2d2d2;
+	color: black;
     }
 
     QTabBar::tab:selected {
@@ -521,6 +521,7 @@
         min-width:140px;
         color:#818181;
         border-color:#819AC8;
+	background-color:#ffffff;
     }
 
     QAbstractSpinBox::up-button {
@@ -563,7 +564,7 @@
 
 
     /****************************************************************************************/
-                        /*************** Overview Page*****************/
+    /*************** Overview Page*****************/
     /****************************************************************************************/
 
 
@@ -596,7 +597,7 @@
             border-bottom-width: 3px;
             border-top-width: 3px;
             border-top-color: white;
-            border-bottom-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:0.2 #CCDDF9, stop:0.8 #CCDDF9, stop:1 #ffffff);
+            border-bottom-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:0.2 #9013FE, stop:0.8 #9013FE, stop:1 #ffffff);
         }
 
     QToolBar#top_ToolBar > QToolButton:hover:!checked {
@@ -638,7 +639,7 @@
     }
 
     QToolBar#left_ToolBar > QToolButton:checked {
-        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:0.15 #DFE7F3, stop:0.85 #DFE7F3, stop:1 #ffffff);
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:0.2 #9013FE, stop:0.8 #9013FE, stop:1 #ffffff);
     }
 
     QToolBar#left_ToolBar > QToolButton:hover:!checked {
