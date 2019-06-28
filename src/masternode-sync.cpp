@@ -79,21 +79,6 @@ void CMasternodeSync::Reset()
 
 void CMasternodeSync::AddedMasternodeList(uint256 hash)
 {
-    auto ins_res = mapSeenSyncMNB.emplace(hash, 1);
-
-    if(!ins_res.second) {
-
-        auto& seen_sync_mnb = ins_res.first->second;
-
-        if(seen_sync_mnb >= MASTERNODE_SYNC_THRESHOLD)
-            return;
-
-        ++seen_sync_mnb;
-    }
-
-    lastMasternodeList = GetTime();
-
-/*
     if (mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
         if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeList = GetTime();
@@ -103,27 +88,10 @@ void CMasternodeSync::AddedMasternodeList(uint256 hash)
         lastMasternodeList = GetTime();
         mapSeenSyncMNB.insert(make_pair(hash, 1));
     }
-*/
 }
 
 void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
 {
-
-    auto ins_res = mapSeenSyncMNW.emplace(hash, 1);
-
-    if(!ins_res.second) {
-
-        auto& seen_sync_mnw = ins_res.first->second;
-
-        if(seen_sync_mnw >= MASTERNODE_SYNC_THRESHOLD)
-            return;
-
-        ++seen_sync_mnw;
-    }
-
-    lastMasternodeWinner = GetTime();
-
-/*
     if (masternodePayments.mapMasternodePayeeVotes.count(hash)) {
         if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
             lastMasternodeWinner = GetTime();
@@ -133,7 +101,6 @@ void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
         lastMasternodeWinner = GetTime();
         mapSeenSyncMNW.insert(make_pair(hash, 1));
     }
-*/
 }
 
 void CMasternodeSync::GetNextAsset()

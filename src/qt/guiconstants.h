@@ -51,7 +51,7 @@ static const int MAX_URI_LENGTH = 255;
 #define SPINNER_FRAMES 30
 
 #define QAPP_ORG_NAME "AXEL"
-#define QAPP_ORG_DOMAIN "esbproject.online"
+#define QAPP_ORG_DOMAIN "axel.org"
 #define QAPP_APP_NAME_DEFAULT "axel-qt"
 #define QAPP_APP_NAME_TESTNET "axel-qt-testnet"
 

@@ -417,7 +417,7 @@ public:
     int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
     bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
-    bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime);
+    bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount nFees);
     bool MultiSend();
     void AutoCombineDust();
 
@@ -1174,6 +1174,8 @@ public:
     bool WriteToDisk();
 
     int64_t GetTxTime() const;
+    int64_t GetComputedTxTime() const;//align with PIVX    
+
     int GetRequestCount() const;
     void RelayWalletTransaction(std::string strCommand = "tx");
 

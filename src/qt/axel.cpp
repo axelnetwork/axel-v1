@@ -14,6 +14,7 @@
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
+#include "tos.h"
 #include "intro.h"
 #include "net.h"
 #include "networkstyle.h"
@@ -591,6 +592,10 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+	//display TOS
+	if (!Tos::showTos())
+        return 0;
+	
     /// 5. Now that settings and translations are available, ask user for data directory
     // User language is set up: pick a data directory
     if (!Intro::pickDataDirectory())

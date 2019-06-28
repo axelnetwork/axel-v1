@@ -19,8 +19,8 @@ Join to our group at [Discord](https://discordapp.com/channels/40769957338179175
 <tr><td>Staking age</td><td>4 hours</td></tr>
 <tr><td></td><td></td></tr>
 <tr><td>Block rewards</td><td></td></tr>
-<tr><td>501-411840</td><td>15</td></tr>
-<tr><td>411841-...</td><td>61</td></tr>
+<tr><td>501-612600</td><td>15</td></tr>
+<tr><td>612601-...</td><td>61</td></tr>
 <tr><td></td><td></td></tr>
 <tr><td>Total supply</td><td>1000,000,000</td></tr>
 <tr><td></td><td></td></tr>
@@ -32,9 +32,6 @@ Join to our group at [Discord](https://discordapp.com/channels/40769957338179175
 <tr><td>(50000) Tier 2</td><td>59.0%</td></tr>
 <tr><td>(1000000) Tier 1</td><td>8.0%</td></tr>
 </table>
-
-***
-[AXEL Coin private GitLab](https://gitlab.stoamigo.com/agdn/axel-coin)
 
 ***
 Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.

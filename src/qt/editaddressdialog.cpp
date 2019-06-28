@@ -14,7 +14,7 @@
 #include <QDataWidgetMapper>
 #include <QMessageBox>
 
-EditAddressDialog::EditAddressDialog(Mode mode, QWidget* parent) : QDialog(parent),
+EditAddressDialog::EditAddressDialog(Mode mode, QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
                                                                    ui(new Ui::EditAddressDialog),
                                                                    mapper(0),
                                                                    mode(mode),

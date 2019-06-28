@@ -92,7 +92,8 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
     strHTML.reserve(4000);
     strHTML += "<html><font face='verdana, arial, helvetica, sans-serif'>";
 
-    int64_t nTime = wtx.GetTxTime();
+    //int64_t nTime = wtx.GetTxTime();
+    int64_t nTime = rec->time;//align with PIVX
     CAmount nCredit = wtx.GetCredit(ISMINE_ALL);
     CAmount nDebit = wtx.GetDebit(ISMINE_ALL);
     CAmount nNet = nCredit - nDebit;
@@ -253,7 +254,8 @@ QString TransactionDesc::toHTML(CWallet* wallet, CWalletTx& wtx, TransactionReco
     if (wtx.mapValue.count("comment") && !wtx.mapValue["comment"].empty())
         strHTML += "<br><b>" + tr("Comment") + ":</b><br>" + GUIUtil::HtmlEscape(wtx.mapValue["comment"], true) + "<br>";
 
-    QString txIDWithHref = "<a href=\"https://go.axel.network/transactions/?transaction_hash=" + rec->getTxID() + "&view=public" + "\">" + rec->getTxID() + "</a>";
+    //QString txIDWithHref = "<a href=\"https://go.axel.network/transactions/?transaction_hash=" + rec->getTxID() + "&view=public" + "\">" + rec->getTxID() + "</a>";
+	QString txIDWithHref = "<a href=\"https://go.axel.network/#/transaction/" + rec->getTxID() + "\">" + rec->getTxID() + "</a>";
     strHTML += "<b>" + tr("Transaction ID") + ":</b> " + txIDWithHref + "<br>";
     strHTML += "<b>" + tr("Output index") + ":</b> " + QString::number(rec->getOutputIndex()) + "<br>";
 

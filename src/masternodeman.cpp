@@ -1064,9 +1064,14 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             if (i != mAskedUsForWinnerMasternodeList.end()) {
                 int64_t t = (*i).second;
                 if (GetTime() < t) {
-                    Misbehaving(pfrom->GetId(), 34);
+                    /*
+                    In block out of sync case, we triggers resync winner list, and it was thought to be
+                    attack here! In our case, getting a winning Masternode list cannot be a DDoS attack, so skip
+                    bellow checking, and let the Masternode list share to peers.
+                    */
+                    //Misbehaving(pfrom->GetId(), 34);
                     LogPrintf("mnget - peer already asked me for the list\n");
-                    return;
+                    //return;
                 }
             }
             int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;

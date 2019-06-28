@@ -354,6 +354,7 @@ UniValue listmasternodes(const UniValue& params, bool fHelp)
             obj.push_back(Pair("lastseen", (int64_t)mn->lastPing.sigTime));
             obj.push_back(Pair("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime)));
             obj.push_back(Pair("lastpaid", (int64_t)mn->GetLastPaid()));
+            obj.push_back(Pair("ip", mn->addr.ToString()));
 
             ret.push_back(obj);
         }
@@ -754,6 +755,21 @@ UniValue createmasternodekey (const UniValue& params, bool fHelp)
 
     CKey secret;
     secret.MakeNewKey(false);
+
+    // // use for generating of pub/priv spork keys
+    // CPubKey pubKey = secret.GetPubKey();
+    // CKeyID vchAddressA = pubKey.GetID();
+
+    // const unsigned char* it;
+    // char buf[8];
+    // std::string strPubKey;
+    // memset(buf, 0, sizeof(buf));
+    // for (it = pubKey.begin(); it != pubKey.end(); ++it) {
+    //     sprintf(buf, "%0.2x", *it);
+    //     strPubKey += buf;
+    // }
+    // LogPrintf("spork keys:\npub key hash: %s\nstrSporkKey=%s\n-sporkkey=%s\n",
+    //     CBitcoinAddress(vchAddressA).ToString(), strPubKey, CBitcoinSecret(secret).ToString());
 
     return CBitcoinSecret(secret).ToString();
 }
