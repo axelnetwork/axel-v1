@@ -120,31 +120,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
+    CMutableTransaction txCoinStake;
     if (fProofOfStake) {
-        boost::this_thread::interruption_point();
-        pblock->nTime = GetAdjustedTime();
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        pblock->nBits = GetNextWorkRequired(pindexPrev);
-        CMutableTransaction txCoinStake;
-        int64_t nSearchTime = pblock->nTime; // search to current time
-        bool fStakeFound = false;
-        if (nSearchTime >= nLastCoinStakeSearchTime) {
-            unsigned int nTxNewTime = 0;
-            if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) {
-                pblock->nTime = nTxNewTime;
-
-                LogPrintf("CreateNewBlock() if fProofOfStake: chainActive.Height() = %s \n", chainActive.Height());
-                pblock->vtx[0].vout[0].SetEmpty();
-
-                pblock->vtx.push_back(CTransaction(txCoinStake));
-                fStakeFound = true;
-            }
-            nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
-            nLastCoinStakeSearchTime = nSearchTime;
-        }
-
-        if (!fStakeFound)
-            return nullptr;
+        pblock->vtx[0].vout[0].SetEmpty();
+        pblock->vtx.push_back(CTransaction(txCoinStake));
     }
 
     // Largest block you're willing to create:
@@ -341,8 +320,34 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         if (nHeight >= 1 && nHeight <= 100)
             txNew.blob = "Generate Premine Tx";
         // Compute final transaction.
-        if (!fProofOfStake) {
+        if (fProofOfStake) {
+            boost::this_thread::interruption_point();
+            pblock->nTime = GetAdjustedTime();
+            //CBlockIndex* pindexPrev = chainActive.Tip();
+            pblock->nBits = GetNextWorkRequired(pindexPrev);
+            //CMutableTransaction txCoinStake;
+            int64_t nSearchTime = pblock->nTime; // search to current time
+            bool fStakeFound = false;
+            if (nSearchTime >= nLastCoinStakeSearchTime) {
+                unsigned int nTxNewTime = 0;
+                if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime, nFees)) {
+                    pblock->nTime = nTxNewTime;
 
+                    LogPrintf("CreateNewBlock() if fProofOfStake: chainActive.Height() = %s \n", chainActive.Height());
+                    //pblock->vtx[0].vout[0].SetEmpty();
+
+                    //pblock->vtx.push_back(CTransaction(txCoinStake));
+                    pblock->vtx[1] = CTransaction(txCoinStake);
+                    fStakeFound = true;
+                }
+                nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
+                nLastCoinStakeSearchTime = nSearchTime;
+            }
+
+            if (!fStakeFound)
+                return nullptr;
+
+        } else {
             txNew.vout[0].nValue       = block_value + nFees;
             txNew.vout[0].scriptPubKey = scriptPubKeyIn;
             pblocktemplate->vTxFees[0] = -nFees;

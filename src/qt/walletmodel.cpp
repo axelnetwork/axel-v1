@@ -220,7 +220,10 @@ void WalletModel::pollBalanceChanged()
 void WalletModel::refreshClicked()
 {
     if (transactionTableModel)
-        transactionTableModel->updateConfirmations();
+    {
+		transactionTableModel->updateConfirmations();
+		transactionTableModel->refresh();
+	}
 }
 
 //void WalletModel::checkBalanceChanged()

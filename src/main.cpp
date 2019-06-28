@@ -261,6 +261,85 @@ struct CBlockReject {
 };
 
 /**
+ * Maintain the history of invalid blocks from peers to trigger a block spam filter,
+* this is a protection for anti "Fake Stake" attack.
+ */
+class CNodeBlocks
+{
+public:
+    CNodeBlocks():
+            maxSize(0),
+            maxAvg(0)
+    {
+        maxSize = GetArg("-blockspamfiltermaxsize", DEFAULT_BLOCK_SPAM_FILTER_MAX_SIZE);
+        maxAvg = GetArg("-blockspamfiltermaxavg", DEFAULT_BLOCK_SPAM_FILTER_MAX_AVG);
+    }
+
+    bool onBlockReceived(int nHeight) {
+        if(nHeight > 0 && maxSize && maxAvg) {
+            addPoint(nHeight);
+            return true;
+        }
+        return false;
+    }
+
+    bool updateState(CValidationState& state, bool ret)
+    {
+        // No Blocks
+        size_t size = points.size();
+        if(size == 0)
+            return ret;
+
+        // Compute the number of the received blocks
+        size_t nBlocks = 0;
+        for(auto point : points)
+        {
+            nBlocks += point.second;
+        }
+
+        // Compute the average value per height
+        double nAvgValue = (double)nBlocks / size;
+
+        // Ban the node if try to spam
+        bool banNode = (nAvgValue >= 1.5 * maxAvg && size >= maxAvg) ||
+                       (nAvgValue >= maxAvg && nBlocks >= maxSize) ||
+                       (nBlocks >= maxSize * 3);
+        if(banNode)
+        {
+            // Clear the points and ban the node
+            points.clear();
+            return state.DoS(100, error("block-spam ban node for sending spam"));
+        }
+
+        return ret;
+    }
+
+private:
+    void addPoint(int height)
+    {
+        // Remove the last element in the list
+        if(points.size() == maxSize)
+        {
+            points.erase(points.begin());
+        }
+
+        // Add the point to the list
+        int occurrence = 0;
+        auto mi = points.find(height);
+        if (mi != points.end())
+            occurrence = (*mi).second;
+        occurrence++;
+        points[height] = occurrence;
+    }
+
+private:
+    std::map<int,int> points;
+    size_t maxSize;
+    size_t maxAvg;
+};
+
+
+/**
  * Maintain validation-specific state about nodes, protected by cs_main, instead
  * by CNode's own locks. This simplifies asynchronous operation, where
  * processing of incoming data is done after the ProcessMessage call returns,
@@ -293,6 +372,8 @@ struct CNodeState {
     int nBlocksInFlight;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
+
+    CNodeBlocks nodeBlocks;
 
     CNodeState()
     {
@@ -1665,7 +1746,7 @@ CAmount GetBlockValue(int nHeight)
     if (nHeight < 500) {    // premine
         nSubsidy = 1500000 * COIN;
     }
-    else if (nHeight >= 500 && nHeight < 411840) {
+    else if (nHeight >= 500 && nHeight < 612600) {
         nSubsidy = 15 * COIN;
     }
     else {
@@ -2544,6 +2625,19 @@ bool static ConnectTip(CValidationState& state, CBlockIndex* pindexNew, CBlock* 
     return true;
 }
 
+bool GetTxValueIn(const CTransaction& tx, CAmount &amount)
+{
+    CCoinsViewCache view(pcoinsTip);
+
+    if (view.HaveInputs(tx)){
+        amount = view.GetValueIn(tx);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 bool DisconnectBlocksAndReprocess(int blocks)
 {
     LOCK(cs_main);
@@ -3212,6 +3306,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         // that this block is invalid, so don't issue an outright ban.
         if (nHeight != 0 && !IsInitialBlockDownload()) {
             if (!IsBlockPayeeValid(block, nHeight)) {
+                // Payees of all tiers cannot be found, then try to resync master node from committee.
+                masternodeSync.Reset();
                 mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
                 return state.DoS(0, error("CheckBlock() : Couldn't find masternode payment"),
                     REJECT_INVALID, "bad-cb-payee");
@@ -3470,6 +3566,44 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
+    //Before save block into FS, check for invalid block in case of "Fake Stake" attack.
+    if (block.IsProofOfStake()) {
+        LOCK(cs_main);
+
+        // Check whether is a fork or not
+        if (pindexPrev != NULL && !chainActive.Contains(pindexPrev)) {
+
+            // Start at the block we're adding on to
+            CBlockIndex *prev = pindexPrev;
+            CTransaction &stakeTxIn = block.vtx[1];
+            CBlock bl;
+            // Go backwards on the forked chain up to the split
+            do {
+                if(!ReadBlockFromDisk(bl, prev))
+                    // Previous block not on disk
+                    return error("%s: previous block %s not on disk", __func__, prev->GetBlockHash().GetHex());
+
+
+                // Loop through every input from said block
+                for (CTransaction t : bl.vtx) {
+                    for (CTxIn in: t.vin) {
+                        // Loop through every input of the staking tx
+                        for (CTxIn stakeIn : stakeTxIn.vin) {
+                            // if it's already spent
+                            if (stakeIn.prevout == in.prevout) {
+                                // reject the block
+                                return state.DoS(100,
+                                                 error("%s: input already spent on a previous block", __func__));
+                            }
+                        }
+                    }
+                }
+                prev = prev->pprev;
+
+            } while (!chainActive.Contains(prev));
+        }
+      }
+
     // Write block to history file
     try {
         unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
@@ -3623,8 +3757,29 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
             mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
         }
         CheckBlockIndex();
-        if (!ret)
+
+        // Track invalid blocks, ban peer if they exceed threshold.
+        if (!ret) {
+            // Check spamming
+            if(pindex && pfrom && GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
+                CNodeState *nodestate = State(pfrom->GetId());
+                if(nodestate != nullptr) {
+                    nodestate->nodeBlocks.onBlockReceived(pindex->nHeight);
+                    bool nodeStatus = true;
+                    // UpdateState will return false if the node is attacking us or update the score and return true.
+                    nodeStatus = nodestate->nodeBlocks.updateState(state, nodeStatus);
+                    int nDoS = 0;
+                    if (state.IsInvalid(nDoS)) {
+                        if (nDoS > 0)
+                            Misbehaving(pfrom->GetId(), nDoS);
+                        nodeStatus = false;
+                    }
+                    if (!nodeStatus)
+                        return error("%s : AcceptBlock FAILED - block spam protection", __func__);
+                }
+            }
             return error("%s : AcceptBlock FAILED", __func__);
+        }
     }
 
     if (!ActivateBestChain(state, pblock, checked))

@@ -974,6 +974,24 @@ int64_t CWalletTx::GetTxTime() const
     return n ? n : nTimeReceived;
 }
 
+int64_t CWalletTx::GetComputedTxTime() const
+{
+    LOCK(cs_main);
+    if (IsInMainChain())
+    {
+	    int64_t blockTime=mapBlockIndex.at(hashBlock)->GetBlockTime();	    
+	    return blockTime;
+    }
+	else if(nTimeReceived)
+	{
+		return nTimeReceived;
+	}
+    else
+	{
+        return GetTxTime();
+    }
+}
+
 int CWalletTx::GetRequestCount() const
 {
     // Returns -1 if it wasn't being tracked
@@ -2325,7 +2343,7 @@ bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWa
 }
 
 // ppcoin: create coin stake transaction
-bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime)
+bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount nFees)
 {
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
@@ -2449,11 +2467,11 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     // Calculate reward
     const CBlockIndex* pIndex0 = chainActive.Tip();
 
-    nCredit += GetBlockValue(pIndex0->nHeight);
+    nCredit += GetBlockValue(pIndex0->nHeight) + nFees;
 
     //Masternode payment
     CAmount MnDevFund;
-    CAmount mnblock_value = GetBlockValue(chainActive.Height());
+    CAmount mnblock_value = GetBlockValue(chainActive.Height()) + nFees;
     MnDevFund = masternodePayments.FillBlockPayee(txNew, mnblock_value, true);
 
     nCredit -= MnDevFund;

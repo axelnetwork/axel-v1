@@ -217,4 +217,8 @@
     <qresource prefix="/fonts">
         <file alias="axel_font">res/fonts/axel_font.ttf</file>
     </qresource>
+
+    <qresource prefix="/tos">
+        <file alias="axel_tos">res/tos/AXEL-Wallet-User-Agreement.htm</file>
+    </qresource>
   </RCC>
